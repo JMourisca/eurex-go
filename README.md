@@ -24,8 +24,9 @@ go run main.go -h
 * Improve tests;
 * Improve data input to be more flexible with formats;
 * When reading data from the site, append to the existing data instead of replacing it in order to have a source with 
-more than 90 days;
+more than 90 days data set;
 * Maybe use golang.org/x/text/currency to handle the currency;
+* Set url as configurable
 
 ## Task
 Write a Go library to exchange money from one currency into another, using the ECB reference exchange rate for a particular day (within the last 90 days)
