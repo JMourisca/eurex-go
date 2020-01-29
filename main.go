@@ -4,29 +4,49 @@ import (
 	"eurex-juliana/converter"
 	"flag"
 	"fmt"
+	log "github.com/sirupsen/logrus"
+	"os"
+	"strconv"
 )
 
 func main() {
 
-	//queuePtr := flag.String("queue", "all", "queue name: a string")
-	sourcePtr := flag.String("source", "", "Source Currency")
-	targetPtr := flag.String("target", "", "Target Currency")
-	datePtr := flag.String("date", "", "Date YYYY-MM-DD")
+	// Set input fields and helper
+	amountPtr := flag.String("amount", "", "Amount (e.g. 10)")
+	sourcePtr := flag.String("source", "", "Source Currency (e.g. BRL)")
+	targetPtr := flag.String("target", "", "Target Currency (e.g. CHF)")
+	datePtr := flag.String("date", "", "Date (e.g. YYYY-MM-DD)")
 
 	flag.Usage = func() {
 		fmt.Println("----------------------")
 		fmt.Println("- Currency Conversor -")
 		fmt.Println("----------------------")
 		fmt.Println("Convert currencies")
-		fmt.Println("To run, just call")
-		fmt.Printf("\t- go run main.go -source BRL -target EUR -date YYYY-MM-DD\n")
+		fmt.Println("To run, call")
+		fmt.Printf("\t- go run main.go -amount 10 -source BRL -target EUR -date YYYY-MM-DD\n")
 		fmt.Printf("\t- or just go run main.go to input the data\n")
 		fmt.Println("")
 	}
 
 	flag.Parse()
 
-	var date, source, target string
+	var date, source, target, amountStr string
+
+	if *amountPtr != "" {
+		amountStr = *amountPtr
+	} else {
+		var amountInput string
+		fmt.Print("Amount: ")
+		_, _ = fmt.Scanln(&amountInput)
+		amountStr = amountInput
+	}
+
+	amount, err := strconv.ParseFloat(amountStr, 64)
+
+	if err != nil {
+		log.Error("Invalid amount.")
+		os.Exit(1)
+	}
 
 	if *sourcePtr != "" {
 		source = *sourcePtr
@@ -55,5 +75,6 @@ func main() {
 		date = dateInput
 	}
 
-	converter.Convert(source, target, date)
+	res := converter.Convert(source, target, date, amount)
+	fmt.Printf("%.2f %s = %.2f %s in %s\n", amount, source, res, target, date)
 }

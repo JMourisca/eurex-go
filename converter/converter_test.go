@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"fmt"
 	"math"
 	"os"
 	"testing"
@@ -43,11 +44,12 @@ func TestRate(t *testing.T) {
 
 func TestConvert(t *testing.T) {
 	_ = os.Chdir("..")
+	amount := 10.0
 	validSource := "BRL"
 	validTarget := "CHF"
 	validDate := "2020-01-24"
-	expectedResult := 0.232445
-	currentResult := Convert(validSource, validTarget, validDate)
+	expectedResult := 2.324451
+	currentResult := Convert(validSource, validTarget, validDate, amount)
 
 	if v := compare(currentResult, expectedResult); !v {
 		t.Errorf("Expected %f, got %f, %t", expectedResult, currentResult, v)
@@ -56,12 +58,19 @@ func TestConvert(t *testing.T) {
 	invalidSource := "BRL1"
 	validTarget = "CHF"
 	validDate = "2020-01-24"
-	expectedResult = 1.071200
-	currentResult = Convert(invalidSource, validTarget, validDate)
+	expectedResult = 10.712
+	currentResult = Convert(invalidSource, validTarget, validDate, amount)
 
 	if v := compare(currentResult, expectedResult); !v {
 		t.Errorf("Expected %f, got %f, %t", expectedResult, currentResult, v)
 	}
 
+	_ = os.Chdir("converter")
+}
+
+func ExampleConvert() {
+	_ = os.Chdir("..")
+	fmt.Println(Convert("BRL", "CHF", "2020-01-24", 10.0))
+	// Output: 2.3244510025171428
 	_ = os.Chdir("converter")
 }
