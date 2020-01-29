@@ -75,6 +75,6 @@ func main() {
 		date = dateInput
 	}
 
-	res := converter.Convert(source, target, date, amount)
+	res, source, target := converter.Convert(source, target, date, amount)
 	fmt.Printf("%.2f %s = %.2f %s in %s\n", amount, source, res, target, date)
 }

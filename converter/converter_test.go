@@ -35,8 +35,8 @@ func TestRate(t *testing.T) {
 	_ = os.Chdir("..")
 	data := rates()
 
-	if invalidDate := data.validDate("Some-invalid-data"); invalidDate != "" {
-		t.Error("Expected empty invalid date, got ", invalidDate)
+	if invalidDate, ok := data.validDate("Some-invalid-data"); ok {
+		t.Errorf("Expected empty invalid date, got '%s'", invalidDate)
 	}
 
 	_ = os.Chdir("converter")
@@ -44,25 +44,41 @@ func TestRate(t *testing.T) {
 
 func TestConvert(t *testing.T) {
 	_ = os.Chdir("..")
+
+	defaultCurrency := "EUR"
+
 	amount := 10.0
 	validSource := "BRL"
 	validTarget := "CHF"
 	validDate := "2020-01-24"
 	expectedResult := 2.324451
-	currentResult := Convert(validSource, validTarget, validDate, amount)
+
+	currentResult, newSource, newTarget := Convert(validSource, validTarget, validDate, amount)
 
 	if v := compare(currentResult, expectedResult); !v {
-		t.Errorf("Expected %f, got %f, %t", expectedResult, currentResult, v)
+		t.Errorf("Expected %f, got %f.", expectedResult, currentResult)
+	}
+
+	if newSource != validSource {
+		t.Errorf("Expected %s, got %s.", validSource, newSource)
+	}
+
+	if newTarget != validTarget {
+		t.Errorf("Expected %s, got %s.", validTarget, newTarget)
 	}
 
 	invalidSource := "BRL1"
 	validTarget = "CHF"
 	validDate = "2020-01-24"
 	expectedResult = 10.712
-	currentResult = Convert(invalidSource, validTarget, validDate, amount)
+	currentResult, newSource, newTarget = Convert(invalidSource, validTarget, validDate, amount)
 
 	if v := compare(currentResult, expectedResult); !v {
 		t.Errorf("Expected %f, got %f, %t", expectedResult, currentResult, v)
+	}
+
+	if newSource != defaultCurrency {
+		t.Errorf("Expected %s, got %s.", defaultCurrency, newSource)
 	}
 
 	_ = os.Chdir("converter")
@@ -71,6 +87,6 @@ func TestConvert(t *testing.T) {
 func ExampleConvert() {
 	_ = os.Chdir("..")
 	fmt.Println(Convert("BRL", "CHF", "2020-01-24", 10.0))
-	// Output: 2.3244510025171428
+	// Output: 2.3244510025171428 BRL CHF
 	_ = os.Chdir("converter")
 }
